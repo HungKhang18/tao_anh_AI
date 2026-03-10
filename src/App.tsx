@@ -143,7 +143,7 @@ export default function App() {
         // ctx.fillText('Count the items in each box and write the number in the square.', 100, instructionY);
 
         const padding = 50;
-        const topMargin = instructionY + 40; // Dynamic top margin based on title height
+        const topMargin = instructionY + 20; // Reduced top margin
         const rowHeight = (canvas.height - padding - topMargin) / 3;
         const colWidth = (canvas.width - padding * 2) / 2;
 
@@ -187,14 +187,16 @@ export default function App() {
           const boxSize = 130;
           const rightPadding = 20;
           const leftPadding = 30;
-          const topPadding = 30;
+          const topPadding = 10;
           
           const availableWidth = colWidth - boxSize - rightPadding - leftPadding - 20;
           const availableHeight = rowHeight - (topPadding * 2);
           
           // Calculate optimal grid (cols/rows) to fit 'count' items
-          let colsInCell = Math.min(count, 5);
-          if (count === 4) colsInCell = 2;
+          let colsInCell = Math.min(count, 4);
+          if (count === 10) colsInCell = 5;
+          else if (count === 4) colsInCell = 2;
+          else if (count === 5) colsInCell = 3;
           else if (count === 6) colsInCell = 3;
           else if (count === 8) colsInCell = 4;
           else if (count === 9) colsInCell = 3;
@@ -245,7 +247,7 @@ export default function App() {
         }
       } else {
         // Standard Grid Layouts
-        const padding = 20;
+        const padding = 10;
         const availableWidth = canvas.width - padding * 2;
         const availableHeight = canvas.height - padding * 2;
 

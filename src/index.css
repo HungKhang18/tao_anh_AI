@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-playpen: "Playpen Sans", cursive;
+}
+
+body {
+  font-family: var(--font-playpen);
+}

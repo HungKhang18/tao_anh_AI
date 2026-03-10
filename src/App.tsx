@@ -142,7 +142,7 @@ export default function App() {
         ctx.textAlign = 'left';
         // ctx.fillText('Count the items in each box and write the number in the square.', 100, instructionY);
 
-        const padding = 80;
+        const padding = 50;
         const topMargin = instructionY + 40; // Dynamic top margin based on title height
         const rowHeight = (canvas.height - padding - topMargin) / 3;
         const colWidth = (canvas.width - padding * 2) / 2;
@@ -184,10 +184,10 @@ export default function App() {
           // Draw images in a balanced grid on the left side of the cell
           const count = worksheetCounts[i];
           
-          const boxSize = 120;
-          const rightPadding = 40;
-          const leftPadding = 50;
-          const topPadding = 50;
+          const boxSize = 130;
+          const rightPadding = 20;
+          const leftPadding = 30;
+          const topPadding = 30;
           
           const availableWidth = colWidth - boxSize - rightPadding - leftPadding - 20;
           const availableHeight = rowHeight - (topPadding * 2);
@@ -210,7 +210,7 @@ export default function App() {
             cellH = maxCellH;
           }
           
-          const imgSize = Math.min(cellW, cellH) * 0.85; // 85% of cell size for spacing
+          const imgSize = Math.min(cellW, cellH) * 0.95; // 95% of cell size for spacing
           
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = 'high';
@@ -245,7 +245,7 @@ export default function App() {
         }
       } else {
         // Standard Grid Layouts
-        const padding = 40;
+        const padding = 20;
         const availableWidth = canvas.width - padding * 2;
         const availableHeight = canvas.height - padding * 2;
 
@@ -273,7 +273,7 @@ export default function App() {
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = 'high';
           
-          const scale = Math.min(cellW / img.width, cellH / img.height) * 0.9;
+          const scale = Math.min(cellW / img.width, cellH / img.height) * 0.98;
           const w = img.width * scale;
           const h = img.height * scale;
           const x = padding + c * cellW + (cellW - w) / 2;

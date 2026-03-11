@@ -10,7 +10,8 @@ import {
   ChevronRight,
   Info,
   CheckCircle2,
-  X
+  X,
+  Plus
 } from 'lucide-react';
 
 interface ImageSlot {
@@ -27,10 +28,6 @@ interface Layout {
 }
 
 const LAYOUTS: Layout[] = [
-  { id: 'single', name: 'Single', slots: 1, gridClass: 'grid-cols-1' },
-  { id: 'split-v', name: 'Split Vertical', slots: 2, gridClass: 'grid-cols-2' },
-  { id: 'split-h', name: 'Split Horizontal', slots: 2, gridClass: 'grid-cols-1' },
-  { id: 'grid-2x2', name: '2x2 Grid', slots: 4, gridClass: 'grid-cols-2' },
   { id: 'worksheet', name: 'Worksheet (2x3)', slots: 6, gridClass: 'grid-cols-2', maxUploads: 12 },
 ];
 
@@ -64,10 +61,21 @@ export default function App() {
 
     const fileArray = Array.from(files).filter((f: File) => f.type.startsWith('image/'));
     let processedCount = 0;
-    const updatedSlots = [...slots];
+    let updatedSlots = [...slots];
+
+    // Ensure we have enough slots for the uploaded files
+    const requiredSlots = index + fileArray.length;
+    if (requiredSlots > updatedSlots.length) {
+      const additionalSlotsNeeded = requiredSlots - updatedSlots.length;
+      const newSlots = Array.from({ length: additionalSlotsNeeded }, (_, i) => ({
+        id: `slot-${Date.now()}-${i}`,
+        image: null
+      }));
+      updatedSlots = [...updatedSlots, ...newSlots];
+    }
 
     fileArray.forEach((file: File, i) => {
-      const targetIndex = (index + i) % 12;
+      const targetIndex = index + i;
       const reader = new FileReader();
       reader.onload = (event) => {
         updatedSlots[targetIndex] = { ...updatedSlots[targetIndex], image: event.target?.result as string };
@@ -123,8 +131,8 @@ export default function App() {
         ctx.textAlign = titleAlignment;
         
         let titleX = canvas.width / 2;
-        if (titleAlignment === 'left') titleX = 100;
-        if (titleAlignment === 'right') titleX = canvas.width - 100;
+        if (titleAlignment === 'left') titleX = 40;
+        if (titleAlignment === 'right') titleX = canvas.width - 40;
 
         const displayTitle = titleCase === 'uppercase' ? worksheetTitle.toUpperCase() : worksheetTitle;
         const lines = displayTitle.split('\n');
@@ -142,7 +150,7 @@ export default function App() {
         ctx.textAlign = 'left';
         // ctx.fillText('Count the items in each box and write the number in the square.', 100, instructionY);
 
-        const padding = 50;
+        const padding = 20;
         const topMargin = instructionY + 20; // Reduced top margin
         const rowHeight = (canvas.height - padding - topMargin) / 3;
         const colWidth = (canvas.width - padding * 2) / 2;
@@ -185,11 +193,11 @@ export default function App() {
           const count = worksheetCounts[i];
           
           const boxSize = 130;
-          const rightPadding = 20;
-          const leftPadding = 30;
+          const rightPadding = 10;
+          const leftPadding = 10;
           const topPadding = 10;
           
-          const availableWidth = colWidth - boxSize - rightPadding - leftPadding - 20;
+          const availableWidth = colWidth - boxSize - rightPadding - leftPadding - 10;
           const availableHeight = rowHeight - (topPadding * 2);
           
           // Calculate optimal grid (cols/rows) to fit 'count' items
@@ -239,7 +247,7 @@ export default function App() {
           ctx.strokeStyle = 'black';
           ctx.lineWidth = 6;
           ctx.strokeRect(
-            cellX + colWidth - boxSize - 40, 
+            cellX + colWidth - boxSize - 10, 
             cellY + rowHeight / 2 - boxSize / 2, 
             boxSize, 
             boxSize
@@ -350,32 +358,36 @@ export default function App() {
           {/* Left Column: Controls (7 cols) */}
           <div className="lg:col-span-7 space-y-8">
             
-            {/* Step 1: Layout */}
+            {/* Step 1: Layout & Title */}
             <section className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-sm space-y-6">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-sm">1</div>
-                <h2 className="text-sm font-bold uppercase tracking-widest text-white/80">Choose Layout</h2>
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white/80">Layout & Title</h2>
               </div>
               
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                {LAYOUTS.map((layout) => (
-                  <button
-                    key={layout.id}
-                    onClick={() => handleLayoutChange(layout)}
-                    className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-3 group ${
-                      selectedLayout.id === layout.id
-                        ? 'bg-emerald-500 border-emerald-500 text-black'
-                        : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:border-white/20'
-                    }`}
-                  >
-                    <div className={`grid gap-1 w-10 h-10 ${layout.gridClass}`}>
-                      {Array.from({ length: layout.slots }).map((_, i) => (
-                        <div key={i} className={`rounded-sm ${selectedLayout.id === layout.id ? 'bg-black/40' : 'bg-current opacity-20'}`} />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="col-span-1">
+                  <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-3 block">Selected Layout</span>
+                  <div className="p-4 rounded-2xl border bg-emerald-500 border-emerald-500 text-black flex flex-col items-center gap-3">
+                    <div className="grid gap-1 w-10 h-10 grid-cols-2">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="rounded-sm bg-black/40" />
                       ))}
                     </div>
-                    <span className="text-[10px] font-black uppercase text-center leading-tight">{layout.name}</span>
-                  </button>
-                ))}
+                    <span className="text-[10px] font-black uppercase text-center leading-tight">Worksheet (2x3)</span>
+                  </div>
+                </div>
+
+                <div className="col-span-1 md:col-span-2 space-y-2">
+                  <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Worksheet Title</span>
+                  <textarea 
+                    value={worksheetTitle}
+                    onChange={(e) => setWorksheetTitle(e.target.value)}
+                    rows={3}
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500 transition-all resize-y min-h-[80px]"
+                    placeholder="Enter worksheet title..."
+                  />
+                </div>
               </div>
             </section>
 
@@ -387,6 +399,13 @@ export default function App() {
                   <h2 className="text-sm font-bold uppercase tracking-widest text-white/80">Upload Assets</h2>
                 </div>
                 <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => setSlots([...slots, { id: `slot-${Date.now()}`, image: null }])}
+                    className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1.5"
+                  >
+                    <Plus className="w-3 h-3" />
+                    Add Slot
+                  </button>
                   <label className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1.5 cursor-pointer">
                     <Upload className="w-3 h-3" />
                     Bulk Upload
@@ -472,24 +491,13 @@ export default function App() {
             {/* Step 3: Settings */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Title Settings */}
-              {selectedLayout.id === 'worksheet' && (
-                <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-sm space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-sm">3</div>
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-white/80">Title Style</h2>
-                  </div>
+              <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-sm space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-sm">3</div>
+                  <h2 className="text-sm font-bold uppercase tracking-widest text-white/80">Title Style</h2>
+                </div>
 
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Worksheet Title</span>
-                      <textarea 
-                        value={worksheetTitle}
-                        onChange={(e) => setWorksheetTitle(e.target.value)}
-                        rows={3}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500 transition-all resize-y min-h-[80px]"
-                      />
-                    </div>
-
+                <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Size: {titleFontSize}px</span>
@@ -541,14 +549,13 @@ export default function App() {
                     </div>
                   </div>
                 </div>
-              )}
 
               {/* Quantity Settings */}
-              <div className={`p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-sm space-y-6 ${selectedLayout.id !== 'worksheet' ? 'md:col-span-2' : ''}`}>
+              <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-sm space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-sm">
-                      {selectedLayout.id === 'worksheet' ? '4' : '3'}
+                      4
                     </div>
                     <h2 className="text-sm font-bold uppercase tracking-widest text-white/80">Quantity</h2>
                   </div>

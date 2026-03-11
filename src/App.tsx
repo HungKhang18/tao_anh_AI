@@ -335,7 +335,7 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl md:text-5xl font-black tracking-tighter bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent"
             >
-              Worksheet Creator
+              Hkha
             </motion.h1>
           </div>
           
@@ -559,105 +559,75 @@ export default function App() {
                     </div>
                     <h2 className="text-sm font-bold uppercase tracking-widest text-white/80">Quantity</h2>
                   </div>
-                  <div className="flex bg-black/40 rounded-xl p-1 border border-white/5">
-                    <button
-                      onClick={() => setIsRandom(false)}
-                      className={`px-4 py-1.5 text-[10px] font-black uppercase rounded-lg transition-all ${
-                        !isRandom ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'text-white/40 hover:text-white/60'
-                      }`}
-                    >
-                      Fixed
-                    </button>
-                    <button
-                      onClick={() => setIsRandom(true)}
-                      className={`px-4 py-1.5 text-[10px] font-black uppercase rounded-lg transition-all ${
-                        isRandom ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'text-white/40 hover:text-white/60'
-                      }`}
-                    >
-                      Random
-                    </button>
-                  </div>
                 </div>
 
-                {isRandom ? (
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-[10px] text-white/20 uppercase font-black">Min: {minCount}</span>
-                        </div>
-                        <input 
-                          type="range" min="1" max={maxCount} value={minCount}
-                          onChange={(e) => setMinCount(parseInt(e.target.value))}
-                          className="w-full accent-emerald-500"
-                        />
-                      </div>
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-[10px] text-white/20 uppercase font-black">Max: {maxCount}</span>
-                        </div>
-                        <input 
-                          type="range" min={minCount} max="20" value={maxCount}
-                          onChange={(e) => setMaxCount(parseInt(e.target.value))}
-                          className="w-full accent-emerald-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] text-white/20 uppercase font-black">Count: {fixedCount}</span>
+                        <span className="text-[10px] text-white/20 uppercase font-black">Min: {minCount}</span>
                       </div>
                       <input 
-                        type="range" min="1" max="20" value={fixedCount}
-                        onChange={(e) => setFixedCount(parseInt(e.target.value))}
+                        type="range" min="1" max={maxCount} value={minCount}
+                        onChange={(e) => setMinCount(parseInt(e.target.value))}
                         className="w-full accent-emerald-500"
                       />
                     </div>
-                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
-                        <button
-                          key={num}
-                          onClick={() => setFixedCount(num)}
-                          className={`w-8 h-8 rounded-lg text-[10px] font-black transition-all shrink-0 border ${
-                            fixedCount === num 
-                              ? 'bg-emerald-500 border-emerald-500 text-black' 
-                              : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
-                          }`}
-                        >
-                          {num}
-                        </button>
-                      ))}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] text-white/20 uppercase font-black">Max: {maxCount}</span>
+                      </div>
+                      <input 
+                        type="range" min={minCount} max="20" value={maxCount}
+                        onChange={(e) => setMaxCount(parseInt(e.target.value))}
+                        className="w-full accent-emerald-500"
+                      />
                     </div>
                   </div>
-                )}
+                  
+                  <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
+                    {Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
+                      <button
+                        key={num}
+                        onClick={() => setMaxCount(num)}
+                        className={`w-full aspect-square rounded-lg text-[10px] sm:text-xs font-black transition-all border ${
+                          maxCount === num 
+                            ? 'bg-emerald-500 border-emerald-500 text-black' 
+                            : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+                        }`}
+                      >
+                        {num}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </section>
 
             {/* Action Button */}
-            <button
-              onClick={generateImage}
-              disabled={!slots.some(s => s.image) || isGenerating}
-              className={`w-full py-6 rounded-[2rem] font-black text-xl uppercase tracking-widest flex items-center justify-center gap-4 transition-all ${
-                !slots.some(s => s.image) || isGenerating
-                  ? 'bg-white/5 text-white/10 cursor-not-allowed'
-                  : 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_20px_50px_rgba(16,185,129,0.3)] hover:scale-[1.01] active:scale-[0.99]'
-              }`}
-            >
-              {isGenerating ? (
-                <>
-                  <RefreshCw className="w-7 h-7 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-7 h-7" />
-                  Generate Worksheet
-                </>
-              )}
-            </button>
+            <div className="sticky bottom-8 z-40 pb-4">
+              <button
+                onClick={generateImage}
+                disabled={!slots.some(s => s.image) || isGenerating}
+                className={`w-full py-6 rounded-[2rem] font-black text-xl uppercase tracking-widest flex items-center justify-center gap-4 transition-all ${
+                  !slots.some(s => s.image) || isGenerating
+                    ? 'bg-white/5 text-white/10 cursor-not-allowed'
+                    : 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_20px_50px_rgba(16,185,129,0.3)] hover:scale-[1.01] active:scale-[0.99]'
+                }`}
+              >
+                {isGenerating ? (
+                  <>
+                    <RefreshCw className="w-7 h-7 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-7 h-7" />
+                    Generate Worksheet
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Right Column: Result (5 cols) */}
